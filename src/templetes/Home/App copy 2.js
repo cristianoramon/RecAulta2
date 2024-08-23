@@ -1,61 +1,54 @@
-import P from 'prop-types';
 import logo from './../../logo.svg';
 import './App.css';
-import React,{ Component, useCallback, useEffect, useMemo, useState } from 'react';
-
-  const Posts = ({post,handleClick}) =>{
-    console.log('Filho');
-    return (
-      <div key={post.id} className='post'>
-        <h1 onClick={ ()=> handleClick( post.title)}>{post.title}</h1>
-        <p>{post.body}</p>
-      </div>
-    )
-  }
+import { Component, useEffect, useState } from 'react';
 
 
+const evenFn = () =>{
 
+  console.log('h1 duplicado');
+}
 function App() {
 
-  const [posts,setPosts] = useState([]);
-  const [value,setValue] = useState('');
+   const[counter,setCounter] = useState(0);  
 
-  console.log('Pai');
+   //componentDidUpdate
+   useEffect(
+    ()=>{
+      console.log("componentDidUpdate");
+    }
+   );
 
-  //Did Mount
+  //componentDidMount executa 1 vez
   useEffect(
-    () => {
-      fetch('https://jsonplaceholder.typicode.com/posts')
-      .then((r) => r.json())
-      .then((r) => setPosts(r))  
-    } ,[]
-  );
+    ()=>{
+      console.log("componentDidMount");
+      document.querySelector('h1')?.addEventListener('click',evenFn);
 
- 
-  
-  const handleClick = ( value ) => {
-    setValue(value);
-  };    
-
-  return (
-    <div className='App'>
-      <input type='text' value={value} onChange={ (e) => setValue(e.target.value)} />
-      {useMemo(
-        () => {
-          return (
-            posts.length > 0 &&
-              posts.map((post) => {
-                return (
-                  <Posts key={post.key} post={post} handleClick={handleClick} />
-                )
-              })
-          )
-        },[posts]  ) 
-      
+      //componetDidWillUmount - Limpeza
+      return ()=>{
+        document.querySelector('h1')?.removeEventListener('click',evenFn);
       }
- 
-    </div>
-  )
+    },[]
+    );
+
+  //componentDidMount quando a dependencia  mudar status
+  //Quando o componente e desmontado
+  useEffect(
+    ()=>{
+      console.log("componentDidMount = depedencia = counter");
+    },[counter]
+    );
+  return (
+    <div className="App">
+   
+      <h1> Contador {counter}</h1>
+      <button
+          onClick={ () => setCounter( counter+1)}>
+            +
+      </button>
+         
+  </div>
+);
 
 }
 

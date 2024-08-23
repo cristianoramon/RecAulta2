@@ -1,61 +1,54 @@
-import P from 'prop-types';
 import logo from './../../logo.svg';
 import './App.css';
-import React,{ Component, useCallback, useEffect, useMemo, useState } from 'react';
-
-  const Posts = ({post,handleClick}) =>{
-    console.log('Filho');
-    return (
-      <div key={post.id} className='post'>
-        <h1 onClick={ ()=> handleClick( post.title)}>{post.title}</h1>
-        <p>{post.body}</p>
-      </div>
-    )
-  }
-
-
+import { Component, useState } from 'react';
 
 function App() {
 
-  const [posts,setPosts] = useState([]);
-  const [value,setValue] = useState('');
+   const[reverse,setReverse] = useState(false);
+   const[counter,setCounter] = useState(0);
 
-  console.log('Pai');
+   const reverseClass = reverse ? 'reverse':'';
 
-  //Did Mount
-  useEffect(
-    () => {
-      fetch('https://jsonplaceholder.typicode.com/posts')
-      .then((r) => r.json())
-      .then((r) => setPosts(r))  
-    } ,[]
-  );
+   const hanclickButton = () => {
 
- 
-  
-  const handleClick = ( value ) => {
-    setValue(value);
-  };    
+    reverse ? setReverse(false): setReverse(true);
+    
+  };
+
+  const handleCounter = () => {
+     
+     setCounter( (counter) => counter+1 );  
+  };
 
   return (
-    <div className='App'>
-      <input type='text' value={value} onChange={ (e) => setValue(e.target.value)} />
-      {useMemo(
-        () => {
-          return (
-            posts.length > 0 &&
-              posts.map((post) => {
-                return (
-                  <Posts key={post.key} post={post} handleClick={handleClick} />
-                )
-              })
-          )
-        },[posts]  ) 
+    <div className="App">
+    <header className="App-header">
+      <img src={logo} className={`App-logo ${reverseClass}`} alt="logo" />
       
-      }
- 
-    </div>
-  )
+      <h1> {counter}</h1>
+      <button
+        onClick={hanclickButton}  
+      > reverse {reverseClass}
+      </button>
+      <button
+        onClick={handleCounter}  
+      > counter  {counter}
+      </button>
+      <p>
+        Edit <code>src/App.js</code> and save to reload.
+      </p>
+
+      <a
+        className="App-link"
+        href="https://reactjs.org"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Learn React
+      </a>
+    </header>
+  </div>
+);
 
 }
 

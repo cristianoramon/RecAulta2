@@ -3,18 +3,15 @@ import logo from './../../logo.svg';
 import './App.css';
 import React,{ Component, useCallback, useEffect, useMemo, useState } from 'react';
 
-  const Posts = ({post,handleClick}) =>{
+  const Posts = ({post}) =>{
     console.log('Filho');
     return (
       <div key={post.id} className='post'>
-        <h1 onClick={ ()=> handleClick( post.title)}>{post.title}</h1>
+        <h1>{post.title}</h1>
         <p>{post.body}</p>
       </div>
     )
   }
-
-
-
 function App() {
 
   const [posts,setPosts] = useState([]);
@@ -23,19 +20,16 @@ function App() {
   console.log('Pai');
 
   //Did Mount
-  useEffect(
-    () => {
-      fetch('https://jsonplaceholder.typicode.com/posts')
-      .then((r) => r.json())
-      .then((r) => setPosts(r))  
-    } ,[]
+    useEffect(
+      () => {
+        setTimeout(() => {
+        fetch('https://jsonplaceholder.typicode.com/posts')
+        .then((r) => r.json())
+        .then((r) => setPosts(r))  
+        }, 5000)      
+      } ,[]
   );
 
- 
-  
-  const handleClick = ( value ) => {
-    setValue(value);
-  };    
 
   return (
     <div className='App'>
@@ -46,7 +40,7 @@ function App() {
             posts.length > 0 &&
               posts.map((post) => {
                 return (
-                  <Posts key={post.key} post={post} handleClick={handleClick} />
+                  <Posts key={post.key} post={post} />
                 )
               })
           )
