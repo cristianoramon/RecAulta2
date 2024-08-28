@@ -1,9 +1,6 @@
-import { AppContext } from '../../components/contexts/AppContext';
 import logo from './../../logo.svg';
 import './App.css';
-import React,{ Component, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import {Div} from '../../components/Div';
-
+import React,{ Component, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 
 const globalState = {
@@ -12,35 +9,45 @@ const globalState = {
   body: 'body'
 }
 
-const reducer = (state,action) => {
+const GlobalContext = React.createContext();
 
-  switch( action.type ) {
-    case 'muda': {
+const Div = ( { children } ) => {
+  return (
+    <>
+      <H1 />
+      <P />
+    </>     
+  )
+};
 
-      console.log('Chamou o muda',action.payload);
-      return { ...state,title:action.payload};
-    }
+const H1 = () => {
+  const theContext = useContext(GlobalContext);
+  const { contextState } = theContext;
+  return(
+    <h1>{contextState.title}  {contextState.counter} </h1>
+  )
+};
 
-    case 'invert':{
-           const{ title} = state;
-           return {...state,title:title.split('').reverse().join('')};
-    }
-     
-  }
-  return {...state};
-}
+const P = () => {
+  const theContext = useContext(GlobalContext);
+  const { contextState:{body} ,contextState, setContextState} = theContext;
+  console.log(theContext);
+  return(
+    <p onClick={()=> setContextState( (s) => ( {...s,counter:s.counter+1})) }>{body}</p>
+    //<p onClick={()=> setContextState({...contextState,counter:counter+1}) }>{body}</p>
+  )
+};
 
 function App() {
  
-  const[state,dispatch] = useReducer(reducer,globalState);
-  const {counter,title,body} = state;
+  const [contextState, setContextState] = useState(globalState);
+
   return (
-   <div>
-      <h1>{title} {counter}</h1>
-      <button onClick={ () => dispatch( {type:'muda' ,payload:new Date().toLocaleDateString('pt-BR')})} > C lick</button>
-      <button onClick={ () => dispatch( {type:'invert'})} > invert</button>
-   </div>
-  );
+    <GlobalContext.Provider value={{contextState,setContextState}}>
+      <Div />
+    </GlobalContext.Provider>
+
+  )
 
 }
 
