@@ -1,45 +1,79 @@
-import { AppContext } from '../../components/contexts/AppContext';
 import logo from './../../logo.svg';
 import './App.css';
-import React,{ Component, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import React,{ Component, createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import {Div} from '../../components/Div';
 
+//actions
+export const actions = {
+  CHANGE_TITLE :'CHANGE_TITLE',
+}
 
-
-const globalState = {
+//data.js
+export const globalState = {
   title:'O titulo',
   counter:0,
   body: 'body'
 }
 
-const reducer = (state,action) => {
+//reducer.js
+export const reducer = (state,action) => {
+  console.log('reduce action',action);
 
-  switch( action.type ) {
-    case 'muda': {
+  switch(action.type) {
 
-      console.log('Chamou o muda',action.payload);
-      return { ...state,title:action.payload};
+    case actions.CHANGE_TITLE: {
+      console.log('Mudou o titulo');
+      return{...state,title:action.payload};
     }
-
-    case 'invert':{
-           const{ title} = state;
-           return {...state,title:title.split('').reverse().join('')};
-    }
-     
   }
-  return {...state};
+  return ({...state} );
 }
 
+
+//AppContext.jsx
+export const Context = createContext();
+export const AppContextReducer = ( {children} ) => {
+
+  const [state,dispatch] = useReducer(reducer,globalState);
+
+  const changeTitle = (payload) => {
+    dispatch({type:actions.CHANGE_TITLE,payload:payload})
+  }
+
+  return <Context.Provider value={{state,changeTitle}}>{children}</Context.Provider>
+
+} 
+
+
+//H1 index.jsx
+export const  H1 = () => {
+  const contexts = useContext(Context);  
+  const {state} = contexts;
+  const inputRef = useRef();
+
+  console.log(state.title);  
+  return (   <>
+               <h1 onClick={ () =>  {
+
+                  contexts.changeTitle(inputRef.current.value);
+
+                }}> {state.title} 
+                
+              </h1>
+               <input type="text"  ref={inputRef} />
+             </> );
+}
+
+
+
 function App() {
- 
-  const[state,dispatch] = useReducer(reducer,globalState);
-  const {counter,title,body} = state;
   return (
-   <div>
-      <h1>{title} {counter}</h1>
-      <button onClick={ () => dispatch( {type:'muda' ,payload:new Date().toLocaleDateString('pt-BR')})} > C lick</button>
-      <button onClick={ () => dispatch( {type:'invert'})} > invert</button>
-   </div>
+    <AppContextReducer>
+      <div>
+         <H1></H1>
+      </div>
+    </AppContextReducer>
+   
   );
 
 }
