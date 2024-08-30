@@ -4,12 +4,51 @@ import React,{ Component, createContext, useCallback, useContext, useEffect, use
 import {Div} from '../../components/Div';
 
 
+const useMyHook = (cb,delay=1000) => {
+
+  const savedCb = useRef();
+
+  useEffect(() => {
+    savedCb.current = cb;
+    console.log("status function");
+  },[cb]);
+
+
+  useEffect( () => {
+
+    console.log("status delay");
+    const interval  = setInterval( () => {
+      savedCb.current();
+     },delay);
+     
+     return ()=> clearInterval(interval);
+  },[delay]);
+
+  
+};
+
 function App() {
+  const [counter,setCoounter] = useState(0);
+  const [delay,setDelay] = useState(1000);
+  const [incrementor,setIncrementor] = useState(100);
+
+  useMyHook( () => setCoounter( (c)  => c + 1 ),delay);
   
   return (
     
       <div>
-         <h1>oi</h1>         
+         <h1>counter: {counter}</h1>
+         <h1>Delay: {delay}</h1>
+         <button onClick={ () => {
+          
+          setDelay(  (d) => d+incrementor);
+         } }> + {incrementor}</button>
+         <button onClick={ () => {
+          
+          setDelay(  (d) => d-incrementor);
+         } }> - {incrementor}</button>
+         <input type="text" value={incrementor} onChange={ (e) => setIncrementor( Number(e.target.value)) }></input>
+
       </div>
    
    
