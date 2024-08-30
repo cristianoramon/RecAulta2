@@ -2,15 +2,20 @@ import logo from './../../logo.svg';
 import './App.css';
 import React,{ Component, createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import {Div} from '../../components/Div';
+import { PostProvider } from '../../contexts/PostsProvider';
+import { Posts } from '../../components/Posts';
 
 
 function App() {
   
   return (
     
-      <div>
-         <h1>oi</h1>         
-      </div>
+      <PostProvider>    
+        <div>
+          <Posts/> 
+        </div>
+
+      </PostProvider>
    
    
   );
