@@ -4,19 +4,41 @@ import React,{ Component, createContext, useCallback, useContext, useEffect, use
 import {Div} from '../../components/Div';
 import { PostProvider } from '../../contexts/PostsProvider';
 import { Posts } from '../../components/Posts';
+import { CounterProvider } from '../../contexts/CounterProvider';
+import { Button }  from '../../components/Button';
+
+
+
+/*         
+        <PostProvider>    
+          <div>
+             <Posts/>                             
+          </div>
+        </PostProvider> */
 
 
 function App() {
   
   return (
-    
-      <PostProvider>    
-        <div>
-          <Posts/> 
-        </div>
-
-      </PostProvider>
    
+    <>   
+        <CounterProvider>
+          <PostProvider>    
+           <div>
+              <Button/>
+              <Posts/>                             
+           </div>
+         </PostProvider>
+       </CounterProvider>
+
+
+        
+      
+
+
+     
+    </>
+      
    
   );
 
