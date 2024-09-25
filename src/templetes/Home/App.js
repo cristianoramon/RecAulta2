@@ -1,94 +1,47 @@
 
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import './App.css';
 import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 
-
-const useAsync = ( asyncFunction,shouldLoad) =>{
-
-  // const [result,setResult] = useState(null);
-  // const [error,setError]   = useState(null);
-  // const [status,setStatus]  = useState('idle');
-
-  
-  const[state,setState] = useState({
-
-    result:null,
-    error:null,
-    status:'idle'
-    
-  });
-
-  const run = useCallback( () =>{
-
-      // setResult(null);
-      // setError(null);
-      // setStatus('pending');
-
-      setState( {result:null,
-                  error:null,
-                  status:'pedding'
-      });
-
-
-      return asyncFunction()
-             .then( (response) => {
-              //  setStatus('settled');
-              //  setResult(response);
-
-              setState( {result:response,
-                         error:null,
-                         status:'settled'
-              });
-             })
-             .catch( (error) => {
-              //  setError(error);
-              //  setStatus('error');
-              
-              setState( { result:null,
-                          error:error,
-                          status:'error'
-              });
-             })
-    },[asyncFunction]
- );
-
- useEffect( () => {
-  if (shouldLoad){
-    run();
-  }
- },[run,shouldLoad]);
-
- return [run,state.result,state.error,state.status];
-};
-
-
-
-const fecthData = async () => {
-
-  const data = await fetch('https://jsonplaceholder.typicode.com/posts/');
-  const json = await data.json();
-
-  return json;
-};
 
 
 function App() {
 
-  const [posts,setPosts] = useState(null);
-  const [reFetchData,result,error,status]  = useAsync(fecthData,true);
+  
+  const [counted,setCounted] = useState([0,1,2,3]);
+  const divRef = useRef();
 
-  // useEffect( () => {
-  //   reFetchData();
-  // },[]);
+  // useEffect(()=> {
 
- 
+      //  while( now < now+3600 );
+  //   divRef.current.scrollTop = divRef.current.scrollHeight;
+  // });
+
+
+  useLayoutEffect(()=> {
+
+    const now = Date.now();
+
+    while( Date.now() < now+3600 );
+    divRef.current.scrollTop = divRef.current.scrollHeight;
+  });
+
+
+  const handleClick = () => {
+    setCounted( c => [...c,+c.slice(-1)+1]);
+  }
   return (
 
-    <div>
-        <pre> {JSON.stringify(result,null,2)} </pre>
-       
-    </div>
+   <>
+   <button onClick={ handleClick}> Button {counted.slice(-1)}</button>
+   <div ref={divRef} style={ {height: '100px',width: '100px',overflow:'scroll'}}>
+
+      {counted.map( (c)=>{
+        return <p key={`c-${c}`}>{c}</p>
+      })}
+   </div>
+   </>
     
   );
 
