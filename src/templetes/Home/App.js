@@ -1,45 +1,95 @@
-import logo from './../../logo.svg';
+
+import { useCallback, useState } from 'react';
 import './App.css';
-import React,{ Component, createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import {Div} from '../../components/Div';
-import { PostProvider } from '../../contexts/PostsProvider';
-import { Posts } from '../../components/Posts';
-import { CounterProvider } from '../../contexts/CounterProvider';
-import { Button }  from '../../components/Button';
+import { useEffect } from 'react';
+
+
+const useAsync = ( asyncFunction,shouldLoad) =>{
+
+  // const [result,setResult] = useState(null);
+  // const [error,setError]   = useState(null);
+  // const [status,setStatus]  = useState('idle');
+
+  
+  const[state,setState] = useState({
+
+    result:null,
+    error:null,
+    status:'idle'
+    
+  });
+
+  const run = useCallback( () =>{
+
+      // setResult(null);
+      // setError(null);
+      // setStatus('pending');
+
+      setState( {result:null,
+                  error:null,
+                  status:'pedding'
+      });
+
+
+      return asyncFunction()
+             .then( (response) => {
+              //  setStatus('settled');
+              //  setResult(response);
+
+              setState( {result:response,
+                         error:null,
+                         status:'settled'
+              });
+             })
+             .catch( (error) => {
+              //  setError(error);
+              //  setStatus('error');
+              
+              setState( { result:null,
+                          error:error,
+                          status:'error'
+              });
+             })
+    },[asyncFunction]
+ );
+
+ useEffect( () => {
+  if (shouldLoad){
+    run();
+  }
+ },[run,shouldLoad]);
+
+ return [run,state.result,state.error,state.status];
+};
 
 
 
-/*         
-        <PostProvider>    
-          <div>
-             <Posts/>                             
-          </div>
-        </PostProvider> */
+const fecthData = async () => {
+
+  const data = await fetch('https://jsonplaceholder.typicode.com/posts/');
+  const json = await data.json();
+
+  return json;
+};
 
 
 function App() {
-  
+
+  const [posts,setPosts] = useState(null);
+  const [reFetchData,result,error,status]  = useAsync(fecthData,true);
+
+  // useEffect( () => {
+  //   reFetchData();
+  // },[]);
+
+ 
   return (
-   
-    <>   
-        <CounterProvider>
-          <PostProvider>    
-           <div>
-              <Button/>
-              <Posts/>                             
-           </div>
-         </PostProvider>
-       </CounterProvider>
 
-
-        
-      
-
-
-     
-    </>
-      
-   
+    <div>
+        <pre> {JSON.stringify(result,null,2)} </pre>
+       
+    </div>
+    
   );
 
 }
