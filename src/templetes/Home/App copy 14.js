@@ -1,51 +1,9 @@
 
-import { forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import './App.css';
 import { useEffect } from 'react';
 import { useLayoutEffect } from 'react';
 
-
-
-
-// export const DisplayCounted = forwardRef(
-//   function DisplayCounted({counted},ref) {
-//     return (
-//       <div ref={ref} style={ {height: '100px',width: '100px',overflow:'scroll'}}>
-//       {counted.map( (c)=>{
-//         return <p key={`c-${c}`}>{c}</p>
-//       })}
-      
-//    </div>
-//     );
-// });
-
-
-export const DisplayCounted = forwardRef(
-
-  function DisplayCounted({counted},ref) {
-
-    const [rand,setRand] = useState('0.23');
-    const divRef = useRef();
-
-    const handleClick = ()=> {
-      setRand( (r) => {setRand(Math.random().toFixed(2))});
-
-    };
-
-    useImperativeHandle(ref,()=>({
-      handleClick,
-      divRef:divRef.current,
-    }));
-
-    return (
-      <div ref={divRef} style={ {height: '100px',width: '100px',overflow:'scroll'}}>
-      {counted.map( (c)=>{
-        return <p onClick={handleClick} key={`c-${c}`}>{c} ++ {rand}</p>
-      })}
-      
-   </div>
-    );
-});
 
 
 function App() {
@@ -66,19 +24,23 @@ function App() {
     const now = Date.now();
 
     while( Date.now() < now+3600 );
-    divRef.current.divRef.scrollTop = divRef.current.divRef.scrollHeight;
+    divRef.current.scrollTop = divRef.current.scrollHeight;
   });
 
 
   const handleClick = () => {
     setCounted( c => [...c,+c.slice(-1)+1]);
-    divRef.current.handleClick();
   }
   return (
 
    <>
-    <button onClick={ handleClick}> Button {counted.slice(-1)}</button>
-    <DisplayCounted counted={counted} ref={divRef}></DisplayCounted>
+   <button onClick={ handleClick}> Button {counted.slice(-1)}</button>
+   <div ref={divRef} style={ {height: '100px',width: '100px',overflow:'scroll'}}>
+
+      {counted.map( (c)=>{
+        return <p key={`c-${c}`}>{c}</p>
+      })}
+   </div>
    </>
     
   );
