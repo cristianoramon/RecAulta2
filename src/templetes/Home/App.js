@@ -1,5 +1,5 @@
 
-import { forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
+import { forwardRef, useCallback, useDebugValue, useImperativeHandle, useRef, useState } from 'react';
 import './App.css';
 import { useEffect } from 'react';
 import { useLayoutEffect } from 'react';
@@ -20,67 +20,59 @@ import { useLayoutEffect } from 'react';
 // });
 
 
-export const DisplayCounted = forwardRef(
 
-  function DisplayCounted({counted},ref) {
 
-    const [rand,setRand] = useState('0.23');
-    const divRef = useRef();
+const useMediaQuery = (queryValue,initialValue = false ) =>{
 
-    const handleClick = ()=> {
-      setRand( (r) => {setRand(Math.random().toFixed(2))});
+  const[match,setMatch] = useState(initialValue);
 
-    };
 
-    useImperativeHandle(ref,()=>({
-      handleClick,
-      divRef:divRef.current,
-    }));
+  useDebugValue(` Query : ${queryValue}`, (n) => {
+    return n + 'modificado';
+  });
+  useEffect(()=>{
+    console.log('useEffect ', Date().toString() );
 
-    return (
-      <div ref={divRef} style={ {height: '100px',width: '100px',overflow:'scroll'}}>
-      {counted.map( (c)=>{
-        return <p onClick={handleClick} key={`c-${c}`}>{c} ++ {rand}</p>
-      })}
-      
-   </div>
-    );
-});
+    let isMounted = true;
 
+    const matchMedia = window.matchMedia( queryValue);
+
+    const handleChange = () => {
+    
+      if (!isMounted ) return;
+      setMatch(Boolean(matchMedia.matches));
+      console.log('Match', Boolean(matchMedia.matches));
+    }
+
+    matchMedia.addEventListener('change',handleChange);
+    setMatch(!!matchMedia.matches);
+
+    return () => {
+      isMounted = false;
+      matchMedia.removeEventListener('change',handleChange);
+    }
+
+  },[queryValue]);
+
+  return match;
+}
 
 function App() {
 
+  const huge = useMediaQuery('(min-width: 980px)');  
+  const big = useMediaQuery('(max-width: 978px) and (min-width:768px)');  
+  const medium = useMediaQuery('(max-width: 767px) and (min-width:321px)');
+  const small = useMediaQuery('(max-width: 321px) ');
+
+  const background = huge?'green':big?'red':medium?'purple':small?'yellow':null;
   
-  const [counted,setCounted] = useState([0,1,2,3]);
-  const divRef = useRef();
-
-  // useEffect(()=> {
-
-      //  while( now < now+3600 );
-  //   divRef.current.scrollTop = divRef.current.scrollHeight;
-  // });
-
-
-  useLayoutEffect(()=> {
-
-    const now = Date.now();
-
-    while( Date.now() < now+3600 );
-    divRef.current.divRef.scrollTop = divRef.current.divRef.scrollHeight;
-  });
-
-
-  const handleClick = () => {
-    setCounted( c => [...c,+c.slice(-1)+1]);
-    divRef.current.handleClick();
-  }
   return (
 
-   <>
-    <button onClick={ handleClick}> Button {counted.slice(-1)}</button>
-    <DisplayCounted counted={counted} ref={divRef}></DisplayCounted>
-   </>
-    
+      <>
+      <div style={{fontSize:'60px',background}}>sdd</div>
+      
+      </>
+  
   );
 
 }
