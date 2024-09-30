@@ -1,126 +1,86 @@
-
-import { forwardRef, useCallback, useDebugValue, useImperativeHandle, useRef, useState } from 'react';
-import './App.css';
-import { useEffect } from 'react';
-import { useLayoutEffect } from 'react';
+import { Children, cloneElement, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 
 
+const s = {
 
-// export const DisplayCounted = forwardRef(
-//   function DisplayCounted({counted},ref) {
-//     return (
-//       <div ref={ref} style={ {height: '100px',width: '100px',overflow:'scroll'}}>
-//       {counted.map( (c)=>{
-//         return <p key={`c-${c}`}>{c}</p>
-//       })}
-      
-//    </div>
-//     );
-// });
+  style:{
+    fontSize:'60px',
+  }
+};
 
+
+// const Parent =  ({children})=> {
+//   return children;
+// }
 
 
 
-const useMediaQuery = (queryValue,initialValue = false ) =>{
+// const Parent = ({children} ) => {
 
-  const[match,setMatch] = useState(initialValue);
+//   return Children.map(children,(child) =>{
+//     const newChild =  cloneElement(child,{...s});
+//     return newChild;
+//   })
 
+// }
 
-  useDebugValue(` Query : ${queryValue}`, (n) => {
-    return n + 'modificado';
+const TornOnOf = ({children}) => {
+
+  const [isOn,setIsOn] = useState(false);
+  const onTurn = () => setIsOn((s) => !s);
+
+  return Children.map(children, child=>{
+    const newChild = cloneElement(child,{
+      isOn,
+      onTurn
+    });
+
+    return newChild;
   });
-  useEffect(()=>{
-    console.log('useEffect ', Date().toString() );
-
-    let isMounted = true;
-
-    const matchMedia = window.matchMedia( queryValue);
-
-    const handleChange = () => {
-    
-      if (!isMounted ) return;
-      setMatch(Boolean(matchMedia.matches));
-      console.log('Match', Boolean(matchMedia.matches));
-    }
-
-    matchMedia.addEventListener('change',handleChange);
-    setMatch(!!matchMedia.matches);
-
-    return () => {
-      isMounted = false;
-      matchMedia.removeEventListener('change',handleChange);
-    }
-
-  },[queryValue]);
-
-  return match;
 }
 
-function App() {
+const TornOn = ({isOn,children}) => {
 
-  const huge = useMediaQuery('(min-width: 980px)');  
-  const big = useMediaQuery('(max-width: 978px) and (min-width:768px)');  
-  const medium = useMediaQuery('(max-width: 767px) and (min-width:321px)');
-  const small = useMediaQuery('(max-width: 321px) ');
-
-  const background = huge?'green':big?'red':medium?'purple':small?'yellow':null;
-  
   return (
 
-      <>
-      <div style={{fontSize:'60px',background}}>sdd</div>
-      
-      </>
-  
-  );
-
+    isOn ? children : null
+  )
 }
 
 
-// class App extends Component {
+const TornOf = ({isOn,children}) => {
 
-//   state={
-//     reverse:true,
-//   };
+  return (
 
+    isOn ? null : children
+  )
+}
 
-//   hanclickButton = () => {
-     
-//     const{reverse} = this.state;
+const TornButton = ({isOn,onTurn,...props}) => {
 
-//     reverse ? this.setState({reverse:false}): this.setState({reverse:true});
-    
-//   };
+  return (
 
-//   render () {
-//     const {reverse} = this.state;
-//     const reverseClass = reverse ? 'reverse':'';
-//     return (
-//           <div className="App">
-//           <header className="App-header">
-//             <img src={logo} className={`App-logo ${reverseClass}`} alt="logo" />
+    <button  {...props} onClick={onTurn}>Turn {isOn?'OFF':'ON'}  </button>
+  )
+}
 
-//             <button
-//               onClick={this.hanclickButton}  
-//             > reverse {reverseClass}
-//             </button>
-//             <p>
-//               Edit <code>src/App.js</code> and save to reload.
-//             </p>
-//             <a
-//               className="App-link"
-//               href="https://reactjs.org"
-//               target="_blank"
-//               rel="noopener noreferrer"
-//             >
-//               Learn React
-//             </a>
-//           </header>
-//         </div>
-//     );
-    
-//   }
-// }
+const P = ({children}) => {
+
+  return <p {...s}>{children}</p>
+}
+
+function App(){
+
+  return (
+
+  <TornOnOf>
+    <TornOn><P>liga</P></TornOn>
+    <TornOf>OF</TornOf>
+
+    <TornButton {...s}/>
+  </TornOnOf>  
+  );
+};
 
 export default App;
