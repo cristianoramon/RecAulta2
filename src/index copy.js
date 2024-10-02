@@ -3,13 +3,14 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './templetes/Home/App';
 import reportWebVitals from './reportWebVitals';
-
+import { CounterContextProvider } from './contexts/CounterContextOld2';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
- 
+   <CounterContextProvider>
           <App />
+    </CounterContextProvider> 
     
   </React.StrictMode>
 );
